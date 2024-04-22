@@ -26,4 +26,4 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./publish/*"
-        target: "/var/www/apisimposio"
+        target: "/var/www/apisimposio/"
