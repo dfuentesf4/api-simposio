@@ -40,12 +40,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (string.IsNullOrEmpty(app.Environment.WebRootPath))
-{
-    app.Logger.LogError("WebRootPath is null");
-    // Considera lanzar una excepción o manejar adecuadamente esta situación.
-}
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
