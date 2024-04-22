@@ -34,4 +34,10 @@
     </Content>
   </ItemGroup>
 
+    <ItemGroup>
+	    <Content Include="Resources\Fonts\*.ttf">
+		    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    </Content>
+    </ItemGroup>
+
 </Project>
