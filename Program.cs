@@ -13,6 +13,16 @@ var options = new WebApplicationOptions
 
 var builder = WebApplication.CreateBuilder(options);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        policyBuilder =>
+            policyBuilder.WithOrigins("http://localhost:4200") // Aquí pones los orígenes que necesites
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()); // Añade AllowCredentials si necesitas soportar cookies, etc.
+});
+
 GlobalFontSettings.FontResolver = new FontResolver(builder.Environment.ContentRootPath);
 
 // Add services to the container.
@@ -50,6 +60,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseRouting();
 
