@@ -252,7 +252,21 @@ namespace simposio.Services.Email
         {
             QRCodeEncoder encoder = new QRCodeEncoder();
             Bitmap img = encoder.Encode(texto);
-            System.Drawing.Image Qr = (System.Drawing.Image)img;
+
+            int padding = 20; // Puedes ajustar este valor según tus necesidades
+            int newWidth = img.Width + 2 * padding;
+            int newHeight = img.Height + 2 * padding;
+
+
+            Bitmap paddedImg = new Bitmap(newWidth, newHeight);
+            using (Graphics g = Graphics.FromImage(paddedImg))
+            {
+                g.Clear(Color.White);
+
+                g.DrawImage(img, padding, padding, img.Width, img.Height);
+            }
+
+            System.Drawing.Image Qr = (System.Drawing.Image)paddedImg;
 
 
             MimePart qrAttachment;

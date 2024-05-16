@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using PdfSharp.Fonts;
 using simposio.Services.BDConecction;
 using simposio.Services.DAO;
 using simposio.Services.Email;
 using simposio.Services.PDF;
+using System.Text;
 
 var options = new WebApplicationOptions
 {
     Args = args,
-    WebRootPath = "wwwroot" // Define explícitamente la ruta a wwwroot si es necesario
+    WebRootPath = "wwwroot"
 };
 
 
@@ -22,6 +25,23 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowCredentials()); // Añade AllowCredentials si necesitas soportar cookies, etc.
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 GlobalFontSettings.FontResolver = new FontResolver(builder.Environment.ContentRootPath);
 
@@ -63,6 +83,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

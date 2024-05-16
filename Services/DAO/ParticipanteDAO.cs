@@ -294,6 +294,40 @@ namespace simposio.Services.DAO
             return true;
         }
 
+        public async Task<int> GetPagoByDetallePagoAsync(int idDetalle)
+        {
+            int id = 0;
+            NpgsqlConnection bdConnection = (NpgsqlConnection)_connectionService.CreateConnection();
+            try
+            {
+                await bdConnection.OpenAsync();
+
+                string query = "SELECT * FROM verificacion_pago WHERE detallepagoid = @idDetalle";
+
+                using (var comand = new NpgsqlCommand(query, bdConnection))
+                {
+                    comand.Parameters.AddWithValue("@idDetalle", idDetalle);
+
+                    using (var reader = await comand.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            id = reader.GetInt32(0);
+                            return id;
+                        }
+                    }
+                    comand.Dispose();
+                    bdConnection.CloseAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return id;
+        }
+
         public async Task<bool> PagoVerificadoAsync(int pagoId)
         {
             NpgsqlConnection bdConnection = (NpgsqlConnection)_connectionService.CreateConnection();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using simposio.Models;
 using simposio.Services.DAO;
 using simposio.Services.Email;
@@ -28,6 +29,7 @@ namespace simposio.Controllers
             _pdfEditor = new PDFEditor(_environment);
         }
 
+        [Authorize]
         [HttpGet("Get")]
         public IEnumerable<Participante> Get()
         {
@@ -88,6 +90,7 @@ namespace simposio.Controllers
         [HttpPost("AddPago/{carnet}/{detallePagoId}/{imagen}/{fechaHora}")]
         public async Task<IActionResult> AddPago(string carnet, int detallePagoId, string imagen, DateTime fechaHora)
         {
+            imagen = Uri.UnescapeDataString(imagen);
             if (await _participanteDAO.AddPagoAsync(detallePagoId, imagen, fechaHora))
             {
                 _emailSender.EnviarCorreoReciboPago(await _participanteDAO.GetByCarnetAsync(carnet));
@@ -96,6 +99,18 @@ namespace simposio.Controllers
             else return BadRequest();
         }
 
+        [HttpGet("GetPagoByDetalle/{idDetalle}")]
+        public async Task<IActionResult> GetPagoByCarnet(int idDetalle)
+        {
+            var pago = await _participanteDAO.GetPagoByDetallePagoAsync(idDetalle);
+            if (pago == null)
+            {
+                return NotFound();
+            }
+            return Ok(pago);
+        }
+
+        [Authorize]
         [HttpPost("PagoVerificado/{pagoId}/{carnet}")]
         public async Task<IActionResult> PagoVerificado(int pagoId, string carnet)
         {
@@ -107,6 +122,7 @@ namespace simposio.Controllers
             else return BadRequest();
         }
 
+        [Authorize]
         [HttpGet("GetPagos")]
         public async Task<IActionResult> GetPagos()
         {
@@ -118,6 +134,7 @@ namespace simposio.Controllers
             return Ok(pagos);
         }
 
+        [Authorize]
         [HttpPost("SendCertificate")]
         public async Task<IActionResult> SendCertificate()
         {
