@@ -114,6 +114,7 @@ namespace simposio.Controllers
         [HttpPost("PagoVerificado/{pagoId}/{carnet}")]
         public async Task<IActionResult> PagoVerificado(int pagoId, string carnet)
         {
+            //Cambio para probar si envia correo.
             if (await _participanteDAO.PagoVerificadoAsync(pagoId))
             {
                 _emailSender.EnviarCorreoPagoVerificado(await _participanteDAO.GetByCarnetAsync(carnet));
